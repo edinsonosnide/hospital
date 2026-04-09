@@ -9,8 +9,8 @@ public class Patient extends Person implements Treatable{
 
     private List<Symptom> symptoms;
 
-    public Patient(String firstName, String lastName, BigInteger nationalId, int age, String gender, String address, String email, Smartphone smartphone, List<Symptom> symptoms) {
-        super(firstName, lastName, nationalId, age, gender, address, email, smartphone);
+    public Patient(String firstName, String lastName, BigInteger nationalId, int age, Gender gender, String address, String email, Smartphone smartphone, Month monthOfBirth, List<Symptom> symptoms) {
+        super(firstName, lastName, nationalId, age, gender, address, email, smartphone, monthOfBirth);
         this.symptoms = symptoms;
     }
 

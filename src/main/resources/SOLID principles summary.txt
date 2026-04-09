@@ -1,0 +1,13 @@
+The SOLID principles describe how to structure object-oriented code so it remains maintainable, extensible, and consistent over time.
+
+The Single Responsibility Principle (SRP) states that a class should have only one responsibility, meaning it should have a single reason to change. When a class handles multiple concerns—such as business logic, data persistence, and reporting—it becomes harder to maintain and more prone to errors. Separating these concerns into different classes reduces complexity and isolates changes.
+
+The Open/Closed Principle (OCP) emphasizes that software entities should be open for extension but closed for modification. Instead of modifying existing code every time a new requirement appears (for example, adding more if/else conditions), the design should allow new behavior to be added through new classes or implementations. This is commonly achieved in Java using interfaces and polymorphism.
+
+The Liskov Substitution Principle (LSP) requires that subclasses must be usable in place of their parent classes without altering the correctness of the program. If a subclass changes expected behavior—such as throwing exceptions for methods that should work—it violates this principle. Proper use of inheritance and careful design of class hierarchies help maintain this consistency.
+
+The Interface Segregation Principle (ISP) states that clients should not be forced to depend on methods they do not use. Large, general-purpose interfaces can lead to implementations that include unnecessary or meaningless methods. Instead, it is better to define smaller, more specific interfaces so that classes only implement what they actually need.
+
+Finally, the Dependency Inversion Principle (DIP) suggests that high-level modules should not depend on low-level modules, but both should depend on abstractions. This reduces coupling between components. In Java, this is typically implemented using interfaces and dependency injection, allowing components to be more flexible, testable, and easier to modify.
+
+Together, these principles guide the design of robust systems by promoting separation of concerns, extensibility, and loose coupling.

@@ -14,8 +14,8 @@ public class Doctor<T, K, V> extends Employee implements TreatsPatients {
     private Briefcase<K> briefcase;
     private Backpack<V> Backpack;
 
-    public Doctor(String firstName, String lastName, BigInteger nationalId, int age, String gender, String address, String email, Smartphone smartphone, BigInteger salary, Box<T> box, Briefcase<K> briefcase, Backpack<V> Backpack) {
-        super(firstName, lastName, nationalId, age, gender, address, email, smartphone, salary);
+    public Doctor(String firstName, String lastName, BigInteger nationalId, int age, Gender gender, String address, String email, Smartphone smartphone, BigInteger salary, Box<T> box, Briefcase<K> briefcase, Backpack<V> Backpack, Month monthOfBirth) {
+        super(firstName, lastName, nationalId, age, gender, address, email, smartphone, salary, monthOfBirth);
         this.box = box;
         this.briefcase = briefcase;
         this.Backpack = Backpack;
@@ -26,10 +26,10 @@ public class Doctor<T, K, V> extends Employee implements TreatsPatients {
         List<Treatment> treatmentsGiven = new ArrayList<>();
 
         // This doctor is bad and just know what it just googled: what symptoms does pneumonia produces
-        Symptom chestPain = new Symptom("Chest Pain");
-        Symptom fever = new Symptom("Fever");
-        Symptom cough = new Symptom("Cough");
-        Symptom difficultyBreathing = new Symptom("Difficulty Breathing");
+        Symptom chestPain = new Symptom("Chest Pain", PainLevel.LOW);
+        Symptom fever = new Symptom("Fever", PainLevel.LOW);
+        Symptom cough = new Symptom("Cough", PainLevel.LOW);
+        Symptom difficultyBreathing = new Symptom("Difficulty Breathing",  PainLevel.LOW);
         List<Symptom> knownSymptomsForPneumonia = new ArrayList<>();
         knownSymptomsForPneumonia.add(chestPain);
         knownSymptomsForPneumonia.add(fever);

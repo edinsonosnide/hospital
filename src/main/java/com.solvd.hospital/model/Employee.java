@@ -6,8 +6,8 @@ public abstract class Employee extends Person {
 
     private BigInteger salary;
 
-    public Employee(String firstName, String lastName, BigInteger nationalId, int age, String gender, String address, String email, Smartphone smartphone, BigInteger salary) {
-        super(firstName, lastName, nationalId, age, gender, address, email, smartphone);
+    public Employee(String firstName, String lastName, BigInteger nationalId, int age, Gender gender, String address, String email, Smartphone smartphone, BigInteger salary, Month monthOfBirth) {
+        super(firstName, lastName, nationalId, age, gender, address, email, smartphone, monthOfBirth);
         this.salary = salary;
     }
 

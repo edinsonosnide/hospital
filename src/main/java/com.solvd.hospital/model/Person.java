@@ -11,12 +11,13 @@ public abstract class Person {
     private String lastName;
     private BigInteger nationalId;
     private int age;
-    private String gender;
+    private Gender gender;
     private String address;
     private String email;
     private Smartphone smartphone;
+    private Month monthOfBirth;
 
-    public Person(String firstName, String lastName, BigInteger nationalId, int age, String gender, String address, String email, Smartphone smartphone) {
+    public Person(String firstName, String lastName, BigInteger nationalId, int age, Gender gender, String address, String email, Smartphone smartphone, Month monthOfBirth) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.nationalId = nationalId;
@@ -25,6 +26,7 @@ public abstract class Person {
         this.address = address;
         this.email = email;
         this.smartphone = smartphone;
+        this.monthOfBirth = monthOfBirth;
     }
 
     public String getFirstName() {
@@ -41,7 +43,7 @@ public abstract class Person {
         return age;
     }
 
-    public String getGender() {
+    public Gender getGender() {
         return gender;
     }
 
@@ -57,6 +59,8 @@ public abstract class Person {
         return smartphone;
     }
 
+    public Month getMonthOfBirth() { return monthOfBirth; }
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -71,7 +75,7 @@ public abstract class Person {
         this.age = age;
     }
 
-    public void setGender(String gender) {
+    public void setGender(Gender gender) {
         this.gender = gender;
     }
 
@@ -87,6 +91,8 @@ public abstract class Person {
         LOGGER.info("A phone was given to: " + this.firstName + " " + this.lastName);
         this.smartphone = smartphone;
     }
+
+    public void setMonthOfBirth(Month monthOfBirth) { this.monthOfBirth = monthOfBirth; }
 
     @Override
     public abstract String toString();

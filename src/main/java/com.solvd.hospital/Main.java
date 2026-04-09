@@ -1,21 +1,10 @@
 package com.solvd.hospital;
 
-import com.solvd.hospital.model.Administrator;
-import com.solvd.hospital.model.Backpack;
-import com.solvd.hospital.model.Box;
-import com.solvd.hospital.model.Briefcase;
-import com.solvd.hospital.model.Doctor;
-import com.solvd.hospital.model.Hospital;
-import com.solvd.hospital.model.HospitalRoom;
-import com.solvd.hospital.model.Medicine;
-import com.solvd.hospital.model.Patient;
-import com.solvd.hospital.model.Person;
-import com.solvd.hospital.model.Smartphone;
-import com.solvd.hospital.model.Symptom;
-import com.solvd.hospital.model.Treatment;
+import com.solvd.hospital.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -29,17 +18,16 @@ public class Main {
 
     public static final Logger LOGGER = LogManager.getLogger(Main.class);
 
-
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException {
         LOGGER.info("This is info message");
 
         // Creation of objects
-        Symptom chestPain = new Symptom("Chest Pain");
-        Symptom fever = new Symptom("Fever");
-        Symptom cough = new Symptom("Cough");
-        Symptom difficultyBreathing = new Symptom("Difficulty Breathing");
+        Symptom chestPain = new Symptom("Chest Pain", PainLevel.LOW);
+        Symptom fever = new Symptom("Fever", PainLevel.LOW);
+        Symptom cough = new Symptom("Cough", PainLevel.LOW);
+        Symptom difficultyBreathing = new Symptom("Difficulty Breathing", PainLevel.LOW);
 
-        Patient john = new Patient("John", "Doe", new BigInteger("12345678"),38,"Male","US - Minnesota", "jhon.doe@gmail.com", null, null);
+        Patient john = new Patient("John", "Doe", new BigInteger("12345678"),38,Gender.MALE,"US - Minnesota", "jhon.doe@gmail.com", null, Month.JANUARY, null);
 
         List<Symptom> pneumoniaSymptoms = new ArrayList<>();
         pneumoniaSymptoms.add(chestPain);
@@ -51,9 +39,9 @@ public class Main {
 
         Hospital mayoClinic = new Hospital("Mayo Clinic - Rochester", "200 First Street SW Rochester, Minnesota 55905", new ArrayList<>(), new ArrayList<>());
 
-        Doctor liam = new Doctor("Liam", "Smith", new BigInteger("1234"), 40, "male","US - Minnesota", "liam.smith@gmail.com",null, new BigInteger("100000"), null, null, null);
+        Doctor liam = new Doctor("Liam", "Smith", new BigInteger("1234"), 40, Gender.MALE,"US - Minnesota", "liam.smith@gmail.com",null, new BigInteger("100000"), null, null, null, Month.JANUARY);
 
-        Administrator olivia = new Administrator("Olivia", "Rodrigo", new BigInteger("123"), 25,"female","US - Minnesota","olivia.rodrigo@gmail.com",null, new BigInteger("120000"), mayoClinic);
+        Administrator olivia = new Administrator("Olivia", "Rodrigo", new BigInteger("123"), 25,Gender.FEMALE,"US - Minnesota","olivia.rodrigo@gmail.com",null, new BigInteger("120000"), mayoClinic, Month.JANUARY);
 
         HospitalRoom secondRoomFirstFloor = new HospitalRoom(102, new ArrayList<>(), null);
 
@@ -75,7 +63,7 @@ public class Main {
 
         //comparisons (equals())
         LOGGER.info("\n---equals() function checks:---");
-        Patient johnClone = new Patient("John", "Doe", new BigInteger("12345678"),38,"Male","US - Minnesota", "jhon.doe@gmail.com", null, null);
+        Patient johnClone = new Patient("John", "Doe", new BigInteger("12345678"),38,Gender.MALE,"US - Minnesota", "jhon.doe@gmail.com", null, Month.JANUARY ,null);
         LOGGER.info("Are these Johns the same person? {}", johnClone.equals(john));
 
         Hospital mayoClinicClone = new Hospital("Mayo Clinic - Rochester", "200 First Street SW Rochester, Minnesota 55905", new ArrayList<>(), new ArrayList<>());
@@ -204,5 +192,16 @@ public class Main {
         for (Object medicine : liam.getBox().getThings()){
             LOGGER.info(medicine.toString());
         }
+
+        LOGGER.info("--- Start of commons.io read and write files---");
+        String fileNameInput =  System.getProperty("user.dir")+"\\src\\main\\resources\\SOLID principles summary.txt";
+        String fileNameOutput = System.getProperty("user.dir")+"\\src\\main\\resources\\result of counting.txt";
+        FileReader fileReader = new FileReader();
+        String resultOfReading = fileReader.readFile(fileNameInput);
+        LOGGER.info(resultOfReading);
+        WordCounter wordCounter = new WordCounter();
+        String wordCount = wordCounter.WordCounter(resultOfReading, new String[]{"SRP","OCP","LSP","OCP","LSP","ISP"});
+        LOGGER.info("\n{}", wordCount);
+        FileWriter.writeFile(fileNameOutput,wordCount);
     }
 }
