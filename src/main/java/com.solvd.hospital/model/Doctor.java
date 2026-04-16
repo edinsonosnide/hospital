@@ -14,8 +14,8 @@ public class Doctor<T, K, V> extends Employee implements TreatsPatients {
     private Briefcase<K> briefcase;
     private Backpack<V> Backpack;
 
-    public Doctor(String firstName, String lastName, BigInteger nationalId, int age, Gender gender, String address, String email, Smartphone smartphone, BigInteger salary, Box<T> box, Briefcase<K> briefcase, Backpack<V> Backpack, Month monthOfBirth) {
-        super(firstName, lastName, nationalId, age, gender, address, email, smartphone, salary, monthOfBirth);
+    public Doctor(String firstName, String lastName, BigInteger nationalId, int age, Gender gender, String address, String email, Smartphone smartphone, BigInteger monthlySalary, Box<T> box, Briefcase<K> briefcase, Backpack<V> Backpack, Month monthOfBirth) {
+        super(firstName, lastName, nationalId, age, gender, address, email, smartphone, monthlySalary, monthOfBirth);
         this.box = box;
         this.briefcase = briefcase;
         this.Backpack = Backpack;
@@ -59,14 +59,14 @@ public class Doctor<T, K, V> extends Employee implements TreatsPatients {
             }
 
             if (illnessFound) {
-                LOGGER.info("The patient " + patient.getFirstName() + " " + patient.getLastName() + " has been found to suffer from pneumonia");
-                LOGGER.info(patient.getFirstName() + " " + patient.getLastName() + " has been diagnosed and a treatment will be generated.");
+                LOGGER.info("The patient {} {} has been found to suffer from pneumonia", patient.getFirstName(), patient.getLastName());
+                LOGGER.info("{} {} has been diagnosed and a treatment will be generated.", patient.getFirstName(), patient.getLastName());
                 Illness pneumonia = new Illness("Pneumonia", new Symptom[]{chestPain, fever, cough, difficultyBreathing});
                 Medicine amoxicillin = new Medicine("amoxicillin", "penicillin family antibiotic");
                 Treatment treatment = new Treatment(LocalDate.now(), "Take amoxicillin every day.", pneumonia, new Medicine[]{amoxicillin}, this, patient);
                 treatmentsGiven.add(treatment);
             } else {
-                LOGGER.info(patient.getFirstName() + " " + patient.getLastName() + "´s illness not found");
+                LOGGER.info("{} {}´s illness not found", patient.getFirstName(), patient.getLastName());
             }
         });
         return treatmentsGiven;

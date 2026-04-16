@@ -18,12 +18,12 @@ public class Smartphone extends ElectronicDevice implements Rechargable, AudioPl
     public void setNumber(String number) { this.number = number; }
 
     public void sendMessage(Administrator administrator, Patient patient, String message) {
-        LOGGER.info(administrator.getFirstName() + " is sending a message: " + message);
+        LOGGER.info("{} is sending a message: {}", administrator.getFirstName(), message);
         patient.getPhone().readMessage(patient, message);
     }
 
     public void readMessage(Patient patient, String message) {
-        LOGGER.info(patient.getFirstName() + " is reading a message: " + message);
+        LOGGER.info("{} is reading a message: {}", patient.getFirstName(), message);
     }
 
     @Override
@@ -38,12 +38,12 @@ public class Smartphone extends ElectronicDevice implements Rechargable, AudioPl
 
     @Override
     public void getPercentageOfBattery() {
-        LOGGER.info("Level of current battery is: " + percentageOfBattery + "%");
+        LOGGER.info("Level of current battery is: {}%", percentageOfBattery);
     }
 
     @Override
     public void playSong(String songName) {
-        LOGGER.info("Playing song: " + songName);
+        LOGGER.info("Playing song: {}", songName);
     }
 
     @Override

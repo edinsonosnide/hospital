@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.stream.Collectors;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -52,9 +53,7 @@ public class Main {
         // Everyone say Hi! (use of toString() five times)
         LOGGER.info("\n---toString() function checks and polymorphism check with Person subclasses administrator, patient and doctor:---");
         Person[] everyone = {john, liam, olivia};
-        for (Person person: everyone){
-            LOGGER.info(person.toString());
-        }
+        Arrays.stream(everyone).map(Person::toString).forEach(LOGGER::info);
 
         LOGGER.info(mayoClinic.toString());
         LOGGER.info(samsung.toString());
@@ -88,9 +87,8 @@ public class Main {
         olivia.getHospital().treatAllPatients();
 
         // Administrator sends message about treatment to all patients
-        for (Treatment treatment : olivia.getHospital().getTreatments()){
-            olivia.getPhone().sendMessage(olivia, treatment.getPatient(),"\"Treatment description: " + treatment.getDescription() + "\"");
-        }
+        olivia.getHospital().getTreatments().forEach(treatment -> olivia.getPhone().sendMessage(olivia, treatment.getPatient(), "\"Treatment description: " + treatment.getDescription() + "\""));
+
 
         LOGGER.info("\n---Start of use of interfaces---");
         // Use of interfaces
@@ -128,15 +126,11 @@ public class Main {
 
         LOGGER.info("1. List:");
         List<Medicine> medicineForFlueList = Arrays.asList(paracetamol,loratadine);
-        for (Medicine medicine : medicineForFlueList) {
-            LOGGER.info(medicine);
-        }
+        medicineForFlueList.forEach(LOGGER::info);
 
         LOGGER.info("2. Set:");
         Set<Medicine> medicineForFlueSet = new HashSet<>(medicineForFlueList);
-        for (Medicine medicineForFlue : medicineForFlueSet) {
-            LOGGER.info(medicineForFlue);
-        }
+        medicineForFlueSet.forEach(LOGGER::info);
 
         LOGGER.info("3. Queue:");
         Queue<Medicine> medicineForFlueQueue = new LinkedList<>(medicineForFlueSet);
@@ -177,21 +171,16 @@ public class Main {
 
         LOGGER.info("---1. Generic class box---");
         liam.setBox(boxOfMedicineForFlue);
-        for (Object medicine : liam.getBox().getThings()){
-            LOGGER.info(medicine.toString());
-        }
+        liam.getBox().getThings().forEach(medicine -> LOGGER.info(medicine.toString()));
+
 
         LOGGER.info("---2. Generic class backpack---");
         liam.setBackpack(backpackOfMedicineForFlue);
-        for (Object medicine : liam.getBox().getThings()){
-            LOGGER.info(medicine.toString());
-        }
+        liam.getBackpack().getThings().forEach(medicine -> LOGGER.info(medicine.toString()));
 
         LOGGER.info("---3. Generic class briefcase---");
         liam.setBriefcase(briefcaseMOfMedicinesForFlue);
-        for (Object medicine : liam.getBox().getThings()){
-            LOGGER.info(medicine.toString());
-        }
+        liam.getBriefcase().getThings().forEach(medicine -> LOGGER.info(medicine.toString()));
 
         LOGGER.info("--- Start of commons.io read and write files---");
         String fileNameInput =  System.getProperty("user.dir")+"\\src\\main\\resources\\SOLID principles summary.txt";
@@ -200,8 +189,25 @@ public class Main {
         String resultOfReading = fileReader.readFile(fileNameInput);
         LOGGER.info(resultOfReading);
         WordCounter wordCounter = new WordCounter();
-        String wordCount = wordCounter.WordCounter(resultOfReading, new String[]{"SRP","OCP","LSP","OCP","LSP","ISP"});
+        String wordCount = wordCounter.getWordCounter(resultOfReading, new String[]{"SRP","OCP","LSP","OCP","LSP","ISP"});
         LOGGER.info("\n{}", wordCount);
         FileWriter.writeFile(fileNameOutput,wordCount);
+
+        LOGGER.info("--- Start of 3 functional interfaces ---");
+        AnnualSalaryCalculator annualSalaryCalculator = (employee) -> employee.getMonthlySalary().multiply(new BigInteger(String.valueOf(12)));
+        PatientProcessor patientProcessor = (patient) -> LOGGER.info(patient.toString());
+        SymptomFilter feverFilter = (symptom) -> symptom.getName().equals("Fever");
+
+        BigInteger doctorAnnualSalary = annualSalaryCalculator.calculateAnnualSalary(liam);
+        LOGGER.info("Doctor {} annual salary: {}", liam.getFirstName(), doctorAnnualSalary.toString());
+        patientProcessor.displayPatient(john);
+        Symptom mediumFever = new Symptom("Fever", PainLevel.LOW);
+        List<Symptom> unknownSymptoms = new ArrayList<>();
+        unknownSymptoms.add(chestPain);
+        unknownSymptoms.add(fever);
+        unknownSymptoms.add(mediumFever);
+        unknownSymptoms.add(cough);
+        unknownSymptoms.add(difficultyBreathing);
+        unknownSymptoms.stream().filter(feverFilter::matches).forEach(symptom -> LOGGER.info("Symptom with name fever found: {}",symptom.getName()));
     }
 }

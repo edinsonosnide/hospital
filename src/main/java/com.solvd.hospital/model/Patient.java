@@ -34,7 +34,7 @@ public class Patient extends Person implements Treatable{
     @Override
     public void followTreatment(Treatment treatment) {
         LOGGER.info("Patient " + getFirstName() + " " + getLastName() + " is following this treatment: " + "'" + treatment.getDescription() + "'");
-        while (this.symptoms.isEmpty() == false) {
+        while (!this.symptoms.isEmpty()) {
             this.symptoms.removeFirst();
         }
     }
