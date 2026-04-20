@@ -4,10 +4,10 @@ import com.solvd.hospital.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.*;
-import java.util.stream.Collectors;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -19,7 +19,7 @@ public class Main {
 
     public static final Logger LOGGER = LogManager.getLogger(Main.class);
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         LOGGER.info("This is info message");
 
         // Creation of objects
@@ -196,7 +196,7 @@ public class Main {
         LOGGER.info("--- Start of 3 functional interfaces ---");
         AnnualSalaryCalculator annualSalaryCalculator = (employee) -> employee.getMonthlySalary().multiply(new BigInteger(String.valueOf(12)));
         PatientProcessor patientProcessor = (patient) -> LOGGER.info(patient.toString());
-        SymptomFilter feverFilter = (symptom) -> symptom.getName().equals("Fever");
+        SymptomFilter feverFilter = (symptom) -> symptom.name().equals("Fever");
 
         BigInteger doctorAnnualSalary = annualSalaryCalculator.calculateAnnualSalary(liam);
         LOGGER.info("Doctor {} annual salary: {}", liam.getFirstName(), doctorAnnualSalary.toString());
@@ -208,6 +208,44 @@ public class Main {
         unknownSymptoms.add(mediumFever);
         unknownSymptoms.add(cough);
         unknownSymptoms.add(difficultyBreathing);
-        unknownSymptoms.stream().filter(feverFilter::matches).forEach(symptom -> LOGGER.info("Symptom with name fever found: {}",symptom.getName()));
+        unknownSymptoms.stream().filter(feverFilter::matches).forEach(symptom -> LOGGER.info("Symptom with name fever found: {}",symptom.name()));
+
+        LOGGER.info("--- Start of 3 record classes ---");
+        Address hospitalAddress = new Address("200 First Street SW","Rochester", "Minnesota", "EEUU", "55905" );
+        Symptom IntenseFever = new Symptom("IntenseFever", PainLevel.HIGH);
+        UserCredentials patient = new UserCredentials("Liam","12345678");
+
+        LOGGER.info("--- Start of annotations and reflections ---");
+        Method[] myAnnotationMethods = mayoClinic.getClass().getDeclaredMethods();
+        for  (Method method : myAnnotationMethods) {
+            if (method.isAnnotationPresent(MyAnnotation.class)) {
+                LOGGER.info(method.toString());
+                LOGGER.info("Method´s annotation value: {}",method.getAnnotation(MyAnnotation.class).value());
+                LOGGER.info("Invoking the method: {}",method.invoke(mayoClinic));
+            }
+        }
+        LOGGER.info("Before using setAccessible(true) to empty a field: ");
+        ReflectionUtility.process(mayoClinic);
+
+        Field[] myAnnotationFields = mayoClinic.getClass().getDeclaredFields();
+        for ( Field field : myAnnotationFields) {
+            if (field.isAnnotationPresent(MyMarkerAnnotation.class)) {
+                LOGGER.info(field.toString());
+                LOGGER.info(field.getAnnotation(MyMarkerAnnotation.class));
+                try{
+                    field.setAccessible(true);
+                    LOGGER.info("Before setting annotated field: {}",field.get(mayoClinic));
+                    field.set(mayoClinic,null);
+                    LOGGER.info("After setting annotated field: {}",field.get(mayoClinic));
+                }
+                catch (Exception e){
+                    LOGGER.info(e.getMessage());
+                }
+            }
+        }
+        LOGGER.info("After using setAccessible(true) to empty a field: ");
+        ReflectionUtility.process(mayoClinic);
+
+
     }
 }

@@ -6,7 +6,10 @@ import java.util.List;
 import static com.solvd.hospital.Main.LOGGER;
 
 public class Hospital extends Building{
+
+    @MyMarkerAnnotation
     private List<HospitalRoom> hospitalRooms;
+
     private List<Treatment> treatments;
 
     public Hospital(String name, String address, List<HospitalRoom> hospitalRooms, List<Treatment> treatments) {
@@ -15,6 +18,7 @@ public class Hospital extends Building{
         this.treatments = treatments;
     }
 
+    @MyAnnotation(value = "My custom annotation")
     public List<HospitalRoom> getHospitalRooms() {
         return hospitalRooms;
     }
