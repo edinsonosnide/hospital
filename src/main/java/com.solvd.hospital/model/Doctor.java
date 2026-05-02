@@ -38,13 +38,13 @@ public class Doctor<T, K, V> extends Employee implements TreatsPatients {
 
         List<String> namesOfKnownSymptomsForPneumonia = new ArrayList<>();
         for (Symptom symptom : knownSymptomsForPneumonia) {
-            namesOfKnownSymptomsForPneumonia.add(symptom.getName());
+            namesOfKnownSymptomsForPneumonia.add(symptom.name());
         }
 
         patients.forEach(patient -> {
             List<String> namesOfPatientSymptoms = new ArrayList<>();
             for (Symptom symptom : patient.getSymptoms()) {
-                namesOfPatientSymptoms.add(symptom.getName());
+                namesOfPatientSymptoms.add(symptom.name());
             }
             boolean illnessFound = true;
             if (namesOfKnownSymptomsForPneumonia.size() == namesOfPatientSymptoms.size()) {

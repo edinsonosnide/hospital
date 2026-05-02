@@ -4,14 +4,17 @@ import com.solvd.hospital.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.*;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -23,7 +26,9 @@ public class Main {
 
     public static final Logger LOGGER = LogManager.getLogger(Main.class);
 
+
     public static void main(String[] args) throws IOException, InterruptedException {
+
         LOGGER.info("This is info message");
 
         // Creation of objects
@@ -200,7 +205,7 @@ public class Main {
         LOGGER.info("--- Start of 3 functional interfaces ---");
         AnnualSalaryCalculator annualSalaryCalculator = (employee) -> employee.getMonthlySalary().multiply(new BigInteger(String.valueOf(12)));
         PatientProcessor patientProcessor = (patient) -> LOGGER.info(patient.toString());
-        SymptomFilter feverFilter = (symptom) -> symptom.getName().equals("Fever");
+        SymptomFilter feverFilter = (symptom) -> symptom.name().equals("Fever");
 
         BigInteger doctorAnnualSalary = annualSalaryCalculator.calculateAnnualSalary(liam);
         LOGGER.info("Doctor {} annual salary: {}", liam.getFirstName(), doctorAnnualSalary.toString());
