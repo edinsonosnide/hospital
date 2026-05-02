@@ -7,6 +7,10 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -19,7 +23,7 @@ public class Main {
 
     public static final Logger LOGGER = LogManager.getLogger(Main.class);
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         LOGGER.info("This is info message");
 
         // Creation of objects
@@ -209,5 +213,89 @@ public class Main {
         unknownSymptoms.add(cough);
         unknownSymptoms.add(difficultyBreathing);
         unknownSymptoms.stream().filter(feverFilter::matches).forEach(symptom -> LOGGER.info("Symptom with name fever found: {}",symptom.getName()));
+
+        LOGGER.info("---Start of the use of threads---");
+        //2. Create 2 threads — one using extends Thread, one using implements Runnable
+        MyImplementsRunnableClass myImplementsRunnableClass = new MyImplementsRunnableClass("myImplementsRunnableClass");
+        MyExtendsThreadClass myExtendsThreadClass = new MyExtendsThreadClass(myImplementsRunnableClass, "myExtendsThreadClass");
+
+        myImplementsRunnableClass.run();
+        myExtendsThreadClass.start();
+        myExtendsThreadClass.runTask();
+        //3. Create a Connection Pool.
+        ConnectionPool pool = ConnectionPool.getInstance();
+
+        // 4. Initialize the pool with size 5. Submit 7 borrow-then-release tasks to a fixed thread pool of size 7.
+        ExecutorService workers = Executors.newFixedThreadPool(7);
+
+        Runnable task = () -> {
+            try {
+                String name = Thread.currentThread().getName();
+                LOGGER.info(name + " → waiting for connection...");
+                Connection c = pool.acquire();
+                LOGGER.info(name + " → got " + c);
+                Thread.sleep(2_000);
+                pool.release(c);
+                LOGGER.info(name + " → released " + c);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        };
+
+        for (int i = 0; i < 7; i++) workers.submit(task);
+
+        workers.shutdown();
+        LOGGER.info(workers.awaitTermination(10, TimeUnit.SECONDS));
+        //pool.shutdown();
+
+        // 5. Implement part 4 again using Future / CompletionStage
+        ExecutorService io  = Executors.newFixedThreadPool(7);
+
+        List<CompletableFuture<Void>> stages = new ArrayList<>();
+        for (int i = 1; i <= 7; i++) {
+            int taskId = i;
+            CompletableFuture<Void> stage = CompletableFuture
+                    .supplyAsync(() -> {
+                        try {
+                            return acquireOrThrow(pool, taskId);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }, io)
+                    .thenAcceptAsync(conn -> {
+                        try {
+                            useAndRelease(pool, conn, taskId);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }, io)
+                    .exceptionally(err -> {
+                        System.err.println("task-" + taskId + " failed: " + err);
+                        return null;
+                    });
+            stages.add(stage);
+        }
+
+        CompletableFuture
+                .allOf(stages.toArray(new CompletableFuture[0]))
+                .join();   // main thread waits here
+
+        io.shutdown();
+        pool.shutdown();
+    }
+
+    private static Object acquireOrThrow(ConnectionPool pool, int taskId) throws InterruptedException {
+        Connection c = pool.acquire();
+        String name = Thread.currentThread().getName();
+        LOGGER.info(name + " → got " + c);
+
+        return c;
+    }
+
+    private static <U> void useAndRelease(ConnectionPool pool, U conn, int taskId) throws InterruptedException {
+        Thread.sleep(2_000);
+        String name = Thread.currentThread().getName();
+        pool.release((Connection) conn);
+        LOGGER.info(name + " → released " + conn);
     }
 }
