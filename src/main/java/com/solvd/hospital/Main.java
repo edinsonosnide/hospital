@@ -25,6 +25,13 @@ import com.solvd.hospital.model.person.Person;
 import com.solvd.hospital.model.storage.Backpack;
 import com.solvd.hospital.model.storage.Box;
 import com.solvd.hospital.model.storage.Briefcase;
+import com.solvd.hospital.service.DiagnosisService;
+import com.solvd.hospital.service.StandardDiagnosisService;
+import com.solvd.hospital.service.StandardTreatmentService;
+import com.solvd.hospital.service.TreatmentService;
+import com.solvd.hospital.service.diagnosis.CovidDiagnosisRule;
+import com.solvd.hospital.service.diagnosis.DiagnosisRule;
+import com.solvd.hospital.service.diagnosis.PneumoniaDiagnosisRule;
 import com.solvd.hospital.util.WordCounter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -72,7 +79,14 @@ public class Main {
 
         Hospital mayoClinic = new Hospital("Mayo Clinic - Rochester", "200 First Street SW Rochester, Minnesota 55905", new ArrayList<>(), new ArrayList<>());
 
-        Doctor liam = new Doctor("Liam", "Smith", new BigInteger("1234"), 40, Gender.MALE,"US - Minnesota", "liam.smith@gmail.com",null, new BigInteger("100000"), null, null, null, Month.JANUARY);
+        List<DiagnosisRule> diagnosisRules = List.of(
+                new PneumoniaDiagnosisRule(),
+                new CovidDiagnosisRule()
+        );
+
+        DiagnosisService diagnosisService = new StandardDiagnosisService( diagnosisRules );
+        TreatmentService treatmentService = new StandardTreatmentService();
+        Doctor<Medicine,Medicine,Medicine> liam = new Doctor<>("Liam", "Smith", new BigInteger("1234"), 40, Gender.MALE,"US - Minnesota", "liam.smith@gmail.com",null, new BigInteger("100000"), null, null, null, Month.JANUARY, diagnosisService, treatmentService);
 
         Administrator olivia = new Administrator("Olivia", "Rodrigo", new BigInteger("123"), 25,Gender.FEMALE,"US - Minnesota","olivia.rodrigo@gmail.com",null, new BigInteger("120000"), mayoClinic, Month.JANUARY);
 
