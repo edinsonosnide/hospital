@@ -12,6 +12,8 @@ import com.solvd.hospital.model.medical.Treatment;
 import com.solvd.hospital.model.storage.Backpack;
 import com.solvd.hospital.model.storage.Box;
 import com.solvd.hospital.model.storage.Briefcase;
+import com.solvd.hospital.service.DiagnosisService;
+import com.solvd.hospital.service.TreatmentService;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
@@ -27,61 +29,51 @@ public class Doctor<T, K, V> extends Employee implements TreatsPatients {
     private Briefcase<K> briefcase;
     private Backpack<V> backpack;
 
-    public Doctor(String firstName, String lastName, BigInteger nationalId, int age, Gender gender, String address, String email, Smartphone smartphone, BigInteger monthlySalary, Box<T> box, Briefcase<K> briefcase, Backpack<V> backpack, Month monthOfBirth) {
+    private final DiagnosisService diagnosisService;
+    private final TreatmentService treatmentService;
+
+    public Doctor(String firstName, String lastName, BigInteger nationalId, int age, Gender gender, String address, String email, Smartphone smartphone, BigInteger monthlySalary, Box<T> box, Briefcase<K> briefcase, Backpack<V> backpack, Month monthOfBirth, DiagnosisService diagnosisService, TreatmentService treatmentService) {
         super(firstName, lastName, nationalId, age, gender, address, email, smartphone, monthlySalary, monthOfBirth);
         this.box = box;
         this.briefcase = briefcase;
         this.backpack = backpack;
+        this.diagnosisService = diagnosisService;
+        this.treatmentService = treatmentService;
+
     }
 
     @Override
     public List<Treatment> treatPatients(List<Patient> patients) {
         List<Treatment> treatmentsGiven = new ArrayList<>();
 
-        // This doctor is bad and just know what it just googled: what symptoms does pneumonia produces
-        Symptom chestPain = new Symptom("Chest Pain", PainLevel.LOW);
-        Symptom fever = new Symptom("Fever", PainLevel.LOW);
-        Symptom cough = new Symptom("Cough", PainLevel.LOW);
-        Symptom difficultyBreathing = new Symptom("Difficulty Breathing",  PainLevel.LOW);
-        List<Symptom> knownSymptomsForPneumonia = new ArrayList<>();
-        knownSymptomsForPneumonia.add(chestPain);
-        knownSymptomsForPneumonia.add(fever);
-        knownSymptomsForPneumonia.add(cough);
-        knownSymptomsForPneumonia.add(difficultyBreathing);
+        for (Patient patient : patients) {
+            Illness illness = diagnosisService.diagnose(patient);
 
-        List<String> namesOfKnownSymptomsForPneumonia = new ArrayList<>();
-        for (Symptom symptom : knownSymptomsForPneumonia) {
-            namesOfKnownSymptomsForPneumonia.add(symptom.name());
+            if (illness == null) {
+                LOGGER.info(
+                        "{} {}'s illness not found",
+                        patient.getFirstName(),
+                        patient.getLastName()
+                );
+                continue;
+            }
+
+            LOGGER.info(
+                    "The patient {} {} has been found to suffer from {}",
+                    patient.getFirstName(),
+                    patient.getLastName(),
+                    illness.getName()
+            );
+
+            Treatment treatment = treatmentService.createTreatment(
+                    illness,
+                    this,
+                    patient
+            );
+
+            treatmentsGiven.add(treatment);
         }
 
-        patients.forEach(patient -> {
-            List<String> namesOfPatientSymptoms = new ArrayList<>();
-            for (Symptom symptom : patient.getSymptoms()) {
-                namesOfPatientSymptoms.add(symptom.name());
-            }
-            boolean illnessFound = true;
-            if (namesOfKnownSymptomsForPneumonia.size() == namesOfPatientSymptoms.size()) {
-                for (String patientSymptom : namesOfPatientSymptoms) {
-                    if (!namesOfKnownSymptomsForPneumonia.contains(patientSymptom)) {
-                        illnessFound = false;
-                        break;
-                    }
-                }
-            } else {
-                illnessFound = false;
-            }
-
-            if (illnessFound) {
-                LOGGER.info("The patient {} {} has been found to suffer from pneumonia", patient.getFirstName(), patient.getLastName());
-                LOGGER.info("{} {} has been diagnosed and a treatment will be generated.", patient.getFirstName(), patient.getLastName());
-                Illness pneumonia = new Illness("Pneumonia", new Symptom[]{chestPain, fever, cough, difficultyBreathing});
-                Medicine amoxicillin = new Medicine("amoxicillin", "penicillin family antibiotic");
-                Treatment treatment = new Treatment(LocalDate.now(), "Take amoxicillin every day.", pneumonia, new Medicine[]{amoxicillin}, this, patient);
-                treatmentsGiven.add(treatment);
-            } else {
-                LOGGER.info("{} {}´s illness not found", patient.getFirstName(), patient.getLastName());
-            }
-        });
         return treatmentsGiven;
     }
 
